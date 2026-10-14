@@ -12,19 +12,13 @@
 <style>
 /* Layout: datasheet column. Home = hero + project index; each project opens as its own page (#id) with gallery, video and report */
 :root{
-  --paper:#F2F5F3; --panel:#E7ECE9; --ink:#132120; --muted:#55645F; --rule:#C9D3CF;
-  --accent:#0C7268; --signal:#B7790B; --trace2:#7D8B87; --scrim:rgba(10,16,15,.88);
+  --paper:#0E1615; --panel:#152120; --ink:#E2EBE8; --muted:#93A39E; --rule:#263634;
+  --accent:#3FC2B1; --signal:#E3A93A; --trace2:#6E7F7A; --scrim:rgba(4,8,8,.92);
   --display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
   --body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#0E1615; --panel:#152120; --ink:#E2EBE8; --muted:#93A39E; --rule:#263634;
-  --accent:#3FC2B1; --signal:#E3A93A; --trace2:#6E7F7A; --scrim:rgba(4,8,8,.92); color-scheme:dark}}
-:root[data-theme="dark"]{
-  --paper:#0E1615; --panel:#152120; --ink:#E2EBE8; --muted:#93A39E; --rule:#263634;
-  --accent:#3FC2B1; --signal:#E3A93A; --trace2:#6E7F7A; --scrim:rgba(4,8,8,.92); color-scheme:dark}
-
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--body);
