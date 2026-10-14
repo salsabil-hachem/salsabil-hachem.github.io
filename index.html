@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Salsabil Hachem</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Salsabil Hachem — Mechatronics engineer: robotics, motion control, embedded systems and industrial software.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: datasheet column. Home = hero + project index; each project opens as its own page (#id) with gallery, video and report */
+:root{
+  --paper:#F2F5F3; --panel:#E7ECE9; --ink:#132120; --muted:#55645F; --rule:#C9D3CF;
+  --accent:#0C7268; --signal:#B7790B; --trace2:#7D8B87; --scrim:rgba(10,16,15,.88);
+  --display:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0E1615; --panel:#152120; --ink:#E2EBE8; --muted:#93A39E; --rule:#263634;
+  --accent:#3FC2B1; --signal:#E3A93A; --trace2:#6E7F7A; --scrim:rgba(4,8,8,.92); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1615; --panel:#152120; --ink:#E2EBE8; --muted:#93A39E; --rule:#263634;
+  --accent:#3FC2B1; --signal:#E3A93A; --trace2:#6E7F7A; --scrim:rgba(4,8,8,.92); color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.6 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1040px;margin:0 auto}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+.mono{font-family:var(--mono)}
+.label{font:500 12px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--rule)}
+nav .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:14px;flex-wrap:wrap}
+nav .id{font:600 15px var(--display);letter-spacing:.04em;color:var(--ink);text-decoration:none}
+nav ul{display:flex;gap:20px;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+nav ul a{color:var(--muted);text-decoration:none;font:500 13px var(--mono)}
+nav ul a:hover{color:var(--accent)}
+
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:center;padding-block:72px 56px}
+.hero > *{min-width:0}
+.hero h1{font-size:clamp(44px,7vw,76px);font-weight:700;letter-spacing:-.01em}
+.hero h1 span{color:var(--accent)}
+.role{font:500 18px var(--display);margin:14px 0 18px;color:var(--muted)}
+.lede{max-width:52ch;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;font:500 14px var(--mono);text-decoration:none;border:1px solid var(--ink);color:var(--ink);background:transparent;cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary:hover{background:var(--accent);color:var(--paper)}
+.scope{border:1px solid var(--rule);background:var(--panel);padding:14px;margin:0}
+.scope canvas{width:100%;height:220px;display:block}
+.scope canvas.cell{height:auto;aspect-ratio:560/300;max-width:100%}
+.focus{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.ftile{background:var(--paper);padding:20px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.ftile svg{width:100%;height:auto;max-width:100%;background:var(--panel);border:1px solid var(--rule);margin-bottom:6px;display:block}
+.ftile h3{font-size:19px;font-weight:600}
+.ftile p{margin:0;color:var(--muted);font-size:15px}
+.sv-t{font:500 9px var(--mono);fill:var(--muted)}
+.sv-rule{stroke:var(--rule);stroke-width:1}
+.sv-fill{fill:var(--rule)}
+.sv-link{stroke:var(--ink);stroke-width:7;stroke-linecap:round}
+.sv-grip{stroke:var(--ink);stroke-width:3;fill:none}
+.sv-joint{fill:var(--accent)}
+.sv-band{fill:var(--paper);stroke:var(--rule);stroke-width:1}
+.sv-band.b3{fill:var(--accent);fill-opacity:.18;stroke:var(--accent)}
+.sv-up{fill:var(--accent)}
+.sv-down{fill:var(--signal)}
+.sv-flow{fill:none;stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 5;animation:flow 1.2s linear infinite}
+.sv-node{fill:var(--paper);stroke:var(--ink);stroke-width:1.5}
+.sv-block{fill:var(--paper);stroke:var(--ink);stroke-width:1.5}
+@keyframes flow{to{stroke-dashoffset:-18}}
+@media (prefers-reduced-motion:reduce){.sv-flow{animation:none}}
+@media (max-width:760px){.focus{grid-template-columns:1fr}}
+.scope .legend{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:10px;font:400 12px var(--mono);color:var(--muted)}
+.scope .legend i{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:6px}
+
+section{padding-block:56px;border-top:1px solid var(--rule)}
+.sh{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:32px;flex-wrap:wrap}
+.sh h2{font-size:clamp(28px,4vw,38px);font-weight:600}
+
+/* featured index */
+.proj{display:grid;grid-template-columns:1fr;gap:32px;padding:24px;margin-inline:-24px;border-top:1px dashed var(--rule);text-decoration:none;color:inherit;transition:background .15s}
+.proj:first-child{border-top:0}
+.proj:hover{background:var(--panel)}
+.proj > *{min-width:0}
+.thumb{aspect-ratio:16/10;max-width:100%;background:var(--panel);border:1px solid var(--rule);overflow:hidden;display:grid;place-items:center}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .ph{font:500 12px var(--mono);color:var(--muted);letter-spacing:.1em;text-transform:uppercase;text-align:center;padding:12px}
+.proj h3{font-size:24px;font-weight:600;margin:6px 0 8px}
+.proj p{margin:0 0 14px;max-width:62ch}
+.more{font:500 14px var(--mono);color:var(--accent)}
+.proj:hover .more{text-decoration:underline}
+.tag{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--rule);display:inline-block}
+.tag.live{border-color:var(--signal);color:var(--signal)}
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin:0 0 14px}
+.specs div{background:var(--paper);padding:10px 12px}
+.specs dt{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.specs dd{margin:4px 0 0;font:500 17px var(--mono);font-variant-numeric:tabular-nums}
+.stack{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none}
+.stack li{font:400 12px var(--mono);padding:3px 8px;background:var(--panel)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.card{background:var(--paper);padding:20px;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit;transition:background .15s}
+.card:hover{background:var(--panel)}
+.card h3{font-size:18px;font-weight:600}
+.card p{margin:0;color:var(--muted);font-size:15px}
+.card .domain{font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.card .foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:6px}
+.card .foot .more{font-size:13px}
+
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:200px 1fr;gap:32px;padding-block:20px;border-top:1px dashed var(--rule)}
+.tl li:first-child{border-top:0;padding-top:0}
+.tl li > *{min-width:0}
+.tl .when{font:500 13px var(--mono);color:var(--muted)}
+.tl h3{font-size:19px;font-weight:600}
+.tl .org{color:var(--accent);font-weight:500}
+.tl p{margin:6px 0 0;max-width:66ch}
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px}
+.skills h3{font:500 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.skills ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.two > *{min-width:0}
+.certs{list-style:none;margin:0;padding:0}
+.certs li{border-bottom:1px solid var(--rule)}
+.certs button{all:unset;box-sizing:border-box;width:100%;padding:12px 0;display:flex;justify-content:space-between;gap:12px;cursor:zoom-in;color:var(--ink)}
+.certs button:hover span:first-child{color:var(--accent)}
+.certs button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.certs span:last-child{font:400 12px var(--mono);color:var(--muted);white-space:nowrap}
+.linkbtn{all:unset;color:var(--accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkbtn:focus-visible{outline:2px solid var(--accent)}
+.note{font:400 13px var(--mono);color:var(--muted)}
+.about{display:grid;grid-template-columns:1fr;gap:48px;align-items:start}
+.about > *{min-width:0}
+.about p{max-width:66ch;margin:0 0 14px}
+.portrait{padding:0;border:1px solid var(--rule);background:var(--panel);cursor:zoom-in;display:block;width:100%;max-width:100%;aspect-ratio:4/5;overflow:hidden}
+.portrait img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
+.langs{list-style:none;margin:20px 0 0;padding:0;display:flex;gap:24px;flex-wrap:wrap}
+.langs li{display:flex;flex-direction:column}
+.langs li span:first-child{font-weight:600}
+.langs li span:last-child{font:400 12px var(--mono);color:var(--muted)}
+.proj .period{font:500 13px var(--mono);color:var(--muted);display:block;margin-top:2px}
+@media (max-width:760px){.about{grid-template-columns:1fr;gap:24px}.portrait{max-width:240px}}
+.contact{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.addr{font:500 17px var(--mono);padding:10px 14px;border:1px solid var(--rule);background:var(--panel);user-select:all;overflow-wrap:anywhere}
+footer{padding-block:32px;border-top:1px solid var(--rule);font:400 12px var(--mono);color:var(--muted)}
+
+/* ---------- project page ---------- */
+.detail{padding-block:40px 24px}
+.crumbs{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:32px;font:500 13px var(--mono)}
+.crumbs a{text-decoration:none}
+.dhead{display:grid;grid-template-columns:1fr 300px;gap:40px;align-items:end;padding-bottom:32px;border-bottom:1px solid var(--rule)}
+.dhead > *{min-width:0}
+.dhead h1{font-size:clamp(34px,5.5vw,56px);font-weight:700;margin:10px 0 16px}
+.dhead .sum{font-size:18px;max-width:58ch;margin:0}
+.facts{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.facts li{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--rule);font-size:14px}
+.facts li span:first-child{font:500 11px/1.9 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.facts li span:last-child{text-align:right}
+.block{padding-block:40px;border-top:1px solid var(--rule)}
+.block:first-of-type{border-top:0}
+.block > .label{display:block;margin-bottom:18px}
+.prose{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:28px 40px}
+.prose h3{font-size:18px;font-weight:600;margin-bottom:6px}
+.prose p{margin:0;max-width:62ch}
+.prose ul{margin:6px 0 0;padding-left:18px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.gallery figure{margin:0;display:flex;flex-direction:column;gap:8px}
+.gallery button{padding:0;border:1px solid var(--rule);background:var(--panel);cursor:zoom-in;display:block;aspect-ratio:16/10;max-width:100%;overflow:hidden}
+.gallery img{width:100%;height:100%;object-fit:contain;display:block}
+.gallery figcaption{font:400 13px var(--mono);color:var(--muted)}
+.video video{width:100%;max-width:100%;display:block;background:#000;border:1px solid var(--rule)}
+.video p{font:400 13px var(--mono);color:var(--muted);margin:8px 0 0}
+.report{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;border:1px solid var(--rule);background:var(--panel);padding:18px 20px}
+.report > *{min-width:0}
+.report h3{font-size:18px;font-weight:600}
+.report p{margin:4px 0 0;color:var(--muted);font-size:14px}
+.pdf{width:100%;height:80vh;max-height:900px;border:1px solid var(--rule);margin-top:16px;background:var(--panel);display:block}
+.datapanel{overflow-x:auto;border:1px solid var(--rule);background:var(--panel);padding:16px 18px;font:400 13px/1.55 var(--mono);margin:0;white-space:pre}
+.tbl{overflow-x:auto;border:1px solid var(--rule)}
+.tbl table{border-collapse:collapse;width:100%;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--rule);vertical-align:top}
+.tbl th{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--panel)}
+.tbl tr:last-child td{border-bottom:0}
+.flow{display:flex;flex-direction:column;gap:0;border:1px solid var(--rule)}
+.flow div{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:12px 16px;border-bottom:1px solid var(--rule)}
+.flow div:last-child{border-bottom:0}
+.flow b{font:500 13px var(--mono);color:var(--accent)}
+.empty{border:1px dashed var(--rule);padding:22px;color:var(--muted);font:400 14px var(--mono)}
+.pager{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:32px;border-top:1px solid var(--rule)}
+.pager a{text-decoration:none;display:flex;flex-direction:column;gap:4px;max-width:48%}
+.pager a span:last-child{font:600 18px var(--display);color:var(--ink)}
+.pager a:hover span:last-child{color:var(--accent)}
+.pager a.next{text-align:right;margin-left:auto}
+
+.lightbox{position:fixed;inset:0;z-index:20;background:var(--scrim);display:grid;place-items:center;
+  padding:max(24px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lightbox img{max-width:100%;max-height:85vh;object-fit:contain;background:#fff}
+.lightbox p{color:#E2EBE8;font:400 13px var(--mono);text-align:center;margin:10px 0 0}
+.lightbox button{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px));background:transparent;color:#E2EBE8;border:1px solid #E2EBE8;font:500 13px var(--mono);padding:8px 12px;cursor:pointer}
+
+@media (max-width:760px){
+  .hero,.two,.dhead{grid-template-columns:1fr;gap:28px}
+  .hero{padding-block:40px}
+  .proj,.tl li{grid-template-columns:1fr;gap:12px}
+  .proj{margin-inline:-12px;padding:16px 12px}
+  .flow div{grid-template-columns:1fr;gap:2px}
+  .report{grid-template-columns:1fr}
+  .gallery{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="id" href="#top">S. HACHEM</a>
+  <ul>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</div></nav>
+
+<main class="wrap" id="home">
+  <header class="hero" id="top">
+    <div>
+      <p class="label">Mechatronics engineer · ENISo 2026</p>
+      <h1>Salsabil<br><span>Hachem</span></h1>
+      <p class="role">Robotics · Industry 4.0 · Mechatronic systems · R&D</p>
+      <p class="lede">I'm passionate about robotics, Industry 4.0 and mechatronic systems, where mechanics, electronics and software come together. I'm driven by research and development: turning an idea into a working, tested machine, and making it smarter and more connected.</p>
+      <div class="cta">
+        <a class="btn primary" href="#experience">See my work</a>
+        <a class="btn" href="https://github.com/salsabil-hachem" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+    <figure class="scope" aria-label="Animated robot cell: a conveyor feeds parts, a camera inspects them, a robot arm palletizes them, and machine data flows to an MES panel over MQTT and OPC UA">
+      <canvas id="cell" class="cell" width="560" height="300"></canvas>
+      <figcaption class="legend">
+        <span><i style="background:var(--signal)"></i>MQTT · vision</span>
+        <span><i style="background:var(--accent)"></i>OPC UA · robot</span>
+        <span>Robot cell → MES · illustrative</span>
+      </figcaption>
+    </figure>
+  </header>
+
+
+  <section id="focus">
+    <div class="sh"><h2>What I work on</h2><span class="label">Field level → cloud</span></div>
+    <div class="focus">
+      <div class="ftile">
+        <svg viewBox="0 0 240 140" role="img" aria-label="Two-joint robot arm moving">
+          <line class="sv-rule" x1="10" y1="130" x2="230" y2="130"/>
+          <rect class="sv-fill" x="98" y="116" width="44" height="14"/>
+          <g><animateTransform attributeName="transform" type="rotate" values="-28 120 116;22 120 116;-28 120 116" dur="4.5s" repeatCount="indefinite" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1"/>
+            <line class="sv-link" x1="120" y1="116" x2="120" y2="58"/>
+            <g><animateTransform attributeName="transform" type="rotate" values="55 120 58;-40 120 58;55 120 58" dur="4.5s" repeatCount="indefinite" calcMode="spline" keySplines=".45 0 .55 1;.45 0 .55 1"/>
+              <line class="sv-link" x1="120" y1="58" x2="172" y2="58"/>
+              <path class="sv-grip" d="M172 50v16M172 50h8M172 66h8"/>
+              <circle class="sv-joint" cx="120" cy="58" r="5"/>
+            </g>
+            <circle class="sv-joint" cx="120" cy="116" r="6"/>
+          </g>
+          <text class="sv-t" x="10" y="16">q1, q2 · joint space</text>
+        </svg>
+        <h3>Robotics & motion control</h3>
+        <p>Robot arms, cable robots and drives: kinematics, BLDC and EtherCAT control on real-time Linux.</p>
+      </div>
+      <div class="ftile">
+        <svg viewBox="0 0 240 140" role="img" aria-label="ISA-95 automation pyramid with data moving up and commands moving down">
+          <polygon class="sv-band b0" points="10,130 130,130 118,106 22,106"/>
+          <polygon class="sv-band b1" points="22,104 118,104 106,82 34,82"/>
+          <polygon class="sv-band b2" points="34,80 106,80 94,58 46,58"/>
+          <polygon class="sv-band b3" points="46,56 94,56 82,34 58,34"/>
+          <polygon class="sv-band b4" points="58,32 82,32 70,10"/>
+          <text class="sv-t" x="148" y="122">L0 sensors</text>
+          <text class="sv-t" x="148" y="97">L1 PLC</text>
+          <text class="sv-t" x="148" y="73">L2 SCADA</text>
+          <text class="sv-t" x="148" y="49">L3 MES</text>
+          <text class="sv-t" x="148" y="25">L4 ERP · cloud</text>
+          <circle class="sv-up" r="3"><animateMotion dur="3s" repeatCount="indefinite" path="M62,126 L66,18"/></circle>
+          <circle class="sv-up" r="3"><animateMotion dur="3s" begin="1s" repeatCount="indefinite" path="M62,126 L66,18"/></circle>
+          <circle class="sv-up" r="3"><animateMotion dur="3s" begin="2s" repeatCount="indefinite" path="M62,126 L66,18"/></circle>
+          <circle class="sv-down" r="3"><animateMotion dur="3.6s" begin=".5s" repeatCount="indefinite" path="M74,18 L78,126"/></circle>
+          <circle class="sv-down" r="3"><animateMotion dur="3.6s" begin="2.3s" repeatCount="indefinite" path="M74,18 L78,126"/></circle>
+        </svg>
+        <h3>Industry 4.0</h3>
+        <p>Connecting machines to MES and the cloud: MQTT, OPC UA, ISA-95, digital twins and OEE.</p>
+      </div>
+      <div class="ftile">
+        <svg viewBox="0 0 240 140" role="img" aria-label="Closed-loop control block diagram with signals flowing">
+          <path class="sv-flow" d="M8 52H36M50 52H76M124 52H146M194 52H230"/>
+          <path class="sv-flow" d="M212 52V104H43V59"/>
+          <circle class="sv-node" cx="43" cy="52" r="7"/>
+          <text class="sv-t" x="39" y="55">Σ</text>
+          <rect class="sv-block" x="76" y="38" width="48" height="28"/>
+          <text class="sv-t" x="86" y="55">C(s)</text>
+          <rect class="sv-block" x="146" y="38" width="48" height="28"/>
+          <text class="sv-t" x="153" y="55">plant</text>
+          <text class="sv-t" x="8" y="44">r</text>
+          <text class="sv-t" x="224" y="44">y</text>
+          <text class="sv-t" x="30" y="70">−</text>
+          <text class="sv-t" x="96" y="120">sensor feedback</text>
+          <text class="sv-t" x="8" y="16">model · control · test</text>
+        </svg>
+        <h3>Research & development</h3>
+        <p>From prototype to validated system: modeling, control design, sensor calibration and testing.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="sh"><h2>Experience</h2><span class="label">Click for photos, video & report</span></div>
+    <div id="exp"></div>
+  </section>
+
+  <section id="projects">
+    <div class="sh"><h2>Projects</h2><span class="label">Personal & academic</span></div>
+    <div id="featured"></div>
+    <div class="grid" id="others" style="margin-top:28px"></div>
+  </section>
+
+  <section id="skills">
+    <div class="sh"><h2>Skills</h2><span class="label">Hardware ⇄ software</span></div>
+    <div class="skills">
+      <div><h3>Robotics</h3><ul><li>ROS 2 · Nav2 · SLAM · URDF/TF</li><li>Gazebo · RoboDK offline programming</li><li>KUKA / ABB robot cells</li><li>Reinforcement learning</li></ul></div>
+      <div><h3>Motion & control</h3><ul><li>EtherCAT (IgH master) · DS402 · CSP/CSV</li><li>CAN-FD · TCP/IP</li><li>PREEMPT-RT Linux</li><li>PID · adaptive control · MATLAB/Simulink</li></ul></div>
+      <div><h3>Embedded & hardware</h3><ul><li>Raspberry Pi 4 · ESP32 · FPGA</li><li>BLDC & servo drives (moteus)</li><li>Load cells, LiDAR, sensor calibration</li><li>Electrical cabinets & wiring</li></ul></div>
+      <div><h3>Mechanical</h3><ul><li>SolidWorks · Fusion 360</li><li>Drive sizing · cable routing</li><li>3D printing · CNC machining</li><li>Sheet metal · assembly & QC</li></ul></div>
+      <div><h3>Programming</h3><ul><li>C++ · C · Python · MATLAB</li><li>CMake · Git · Linux</li><li>Docker · GitHub Actions</li></ul></div>
+      <div><h3>Data & AI</h3><ul><li>MQTT · Node-RED · OPC UA</li><li>InfluxDB · Grafana</li><li>OpenCV · TensorFlow</li><li>LLMs (Ollama) · RAG · FastAPI</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="two">
+      <div>
+        <div class="sh"><h2>Education</h2></div>
+        <ol class="tl">
+          <li><span class="when">2023 – 2026</span><div><h3>Engineering degree, Mechatronics</h3><p>National Engineering School of Sousse (ENISo). Graduated Sept. 2026, <span class="org">Mention Très Bien</span>.</p><p class="note">Robotics · control systems · automation · power electronics · sensors & instrumentation · mechanical design</p></div></li>
+          <li><span class="when">Preparatory</span><div><h3>Preparatory cycle for engineering schools</h3><p>IPEIK, Tunisia.</p><p class="note">Applied mathematics · physics · engineering sciences · solid mechanics</p></div></li>
+        </ol>
+      </div>
+      <div>
+        <div class="sh"><h2>Certifications</h2><span class="label">Click to view</span></div>
+        <ul class="certs">
+          <li><button type="button" data-zoom="assets/certs/nvidia-dl.jpg" data-cap="NVIDIA DLI · Fundamentals of Deep Learning"><span>Fundamentals of Deep Learning</span><span>NVIDIA DLI</span></button></li>
+          <li><button type="button" data-zoom="assets/certs/nvidia-nlp.jpg" data-cap="NVIDIA DLI · Building Transformer-Based NLP Applications"><span>Transformer-Based NLP Applications</span><span>NVIDIA DLI</span></button></li>
+          <li><button type="button" data-zoom="assets/certs/nvidia-pdm.jpg" data-cap="NVIDIA DLI · Applications of AI for Predictive Maintenance"><span>AI for Predictive Maintenance</span><span>NVIDIA DLI</span></button></li>
+          <li><button type="button" data-zoom="assets/certs/udemy-ros2.jpg" data-cap="Udemy · ROS2 Concepts – Basics – Level 1"><span>ROS 2 Concepts – Basics, Level 1</span><span>Udemy</span></button></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="activities">
+    <div class="sh"><h2>Leadership & activities</h2><span class="label">ENISo</span></div>
+    <ol class="tl">
+      <li><span class="when">Orange Tech Club</span><div><h3>Supervisor, Mechatronics Division · <span class="org">Orange Tech Club ENISo</span></h3><p>Supervised the division's mechatronics projects; received a certificate of appreciation for this work. <button type="button" class="linkbtn" data-zoom="assets/certs/orange-tech-club.jpg" data-cap="Orange Tech Club ENISo · Certificate of appreciation">View certificate</button></p></div></li>
+      <li><span class="when">Dec 2024</span><div><h3>Event coordinator · <span class="org">Forum of Convergence, ENISo</span></h3><p>Organized and managed the forum connecting students with industry professionals.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="contact">
+    <div class="sh"><h2>Contact</h2><span class="label">Tunisia · open to remote & Europe</span></div>
+    <p style="max-width:60ch;margin:0 0 20px">Looking for roles in robotics, motion control and industrial automation, and for PhD positions in robot learning.</p>
+    <div class="contact">
+      <span class="addr" id="email">salsabilhachem98@gmail.com</span>
+      <button class="btn" id="copy" type="button">Copy email</button>
+    </div>
+    <div class="contact" style="margin-top:12px">
+      <span class="addr">+216 58 261 851</span>
+      <a class="btn" href="https://www.linkedin.com/in/salsabil-hachem" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a class="btn" href="https://github.com/salsabil-hachem" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </section>
+</main>
+
+<main class="wrap detail" id="detail" hidden></main>
+
+<footer><div class="wrap">© 2026 Salsabil Hachem</div></footer>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Image viewer">
+  <button type="button" id="lbClose">Close ✕</button>
+  <div><img id="lbImg" alt=""><p id="lbCap"></p></div>
+</div>
+
+<script>
+/* =====================================================================
+   PROJECT DATA — edit here.
+   Media lives in assets/<id>/. To add your own:
+     photos  → list them in "photos"  (missing files are hidden automatically)
+     video   → "video": "assets/<id>/demo.mp4"
+     report  → "report": "assets/<id>/report.pdf"
+   ===================================================================== */
+var PROJECTS = [
+{
+  id:"cdpr", kind:"exp", period:"2026 · Oshawa, Canada", role:"Research intern · Mitacs",
+  title:"Cable-Driven Parallel Robot winch",
+  domain:"Research · Mitacs", tag:"Ontario Tech Univ.",
+  summary:"Self-contained winch unit for a spatial cable-driven parallel robot: a rototranslating drum with a helical groove keeps a constant winding radius over 5 m of cable, a direct-drive BLDC motor runs over CAN-FD, and a load cell under a measuring pulley gives the cable tension inside the unit. Mitacs Globalink internship and my ENISo graduation project.",
+  facts:[["Program","Mitacs Globalink Research Internship"],["Lab","Mechatronics Laboratory, Ontario Tech University"],["Supervisors","Dr. Mitchell Rushton · Dr. Houssem Saafi"],["Role","Design, prototyping, control, firmware"],["Also","ENISo graduation project (PFE)"]],
+  specs:[["Cable stored","5 m, 1 layer"],["Drum","Ø52 mm, 31 turns"],["Tension range","1–20 N"],["Tension error","0.5 % mean"],["Bus","CAN-FD"],["Load cell error","≤0.5 g"]],
+  stack:["SolidWorks","mj5208 BLDC","moteus r4.11 (FOC)","CAN-FD","CZL601 + HX711","Arduino Mega","Python asyncio","tview","PrusaSlicer"],
+  sections:[
+    ["Rototranslating drum","The grooved drum (Ø52 mm, 31 turns, 62 mm winding length) rotates and translates on a grounded Tr8×2 lead screw, so the cable always leaves the unit at the same point with a single actuator."],
+    ["Integrated tension sensing","A CZL601 bending-beam load cell, held at 45°, carries the measuring pulley inside the unit. Read through an HX711 and an Arduino Mega and calibrated in place: 0.5 g error at 100 g and 0.1 g at 200 g."],
+    ["Self-contained electronics","The moteus r4.11 controller sits on the rear face of the mj5208 motor and measures the angle on the board. Only two cables leave the winch, power and CAN-FD, so adding a winch means adding a node on the bus."],
+    ["Firmware & limits","moteus runs a cascaded loop: outer position/velocity PID, inner FOC current loop with space-vector PWM. Travel, velocity and torque limits are enforced by the firmware, independently of the host."],
+    ["Control software","Three concurrent asyncio blocks: read_arduino() at 200 Hz, control_loop() at 50 Hz sending velocity commands over CAN-FD, and a user loop for setpoints, sharing state through a TensionControl system."],
+    ["Tension & hybrid control","A PI controller on the winding velocity regulates tension (mean error 0.5 % of the set-point at 1.96 N). A hybrid law blends a position PI and a tension PI by the position error: the winch reaches the commanded length, then holds 2.00 N within 0.04 N."],
+    ["Target robot","Eight units on a pegboard frame in an alternating-standoff layout: four bolted flat, four raised on standoffs, with the platform working between the two anchor planes."]
+  ],
+  galleries:[
+    ["Mechanical design",[["assets/cdpr/design-full.jpg","Full design of the self-contained winch unit"],["assets/cdpr/design-section.jpg","Section view: drum, lead screw, guide rods, bearings"],["assets/cdpr/drum-cad.jpg","CAD model of the helical-groove drum"],["assets/cdpr/target-robot.jpg","Target robot: eight winch units on the pegboard frame"]]],
+    ["Prototype & test bench",[["assets/cdpr/prototype.jpg","Assembled prototype of the winch unit"],["assets/cdpr/test-bench.jpg","Test bench: tension applied by a suspended mass"]]],
+    ["Motor & controller",[["assets/cdpr/motor.jpg","mj5208 direct-drive brushless motor"],["assets/cdpr/controller.jpg","moteus r4.11 FOC motor controller"],["assets/cdpr/canfd-adapter.jpg","mjcanfd-usb-1x CAN-FD to USB adapter"],["assets/cdpr/wiring.jpg","Motor wiring and interface with the host computer"]]],
+    ["Firmware & software architecture",[["assets/cdpr/firmware.jpg","Control structure of the moteus firmware: position/velocity PID, FOC current loop, SVPWM"],["assets/cdpr/setup.jpg","Acquisition and actuation chains: load cell → HX711 → Arduino → PC → CAN-FD → moteus"],["assets/cdpr/software-arch.jpg","Control software: read_arduino() 200 Hz, control_loop() 50 Hz, ui_loop()"]]],
+    ["Controllers & results",[["assets/cdpr/tension-loop.jpg","Tension control loop: PI on winding velocity"],["assets/cdpr/hybrid-loop.jpg","Hybrid loop: position PI and tension PI blended by the position error"],["assets/cdpr/tension-result.jpg","Tension regulated at T* = 1.960 N with a 200 g mass"],["assets/cdpr/hybrid-result.jpg","Hybrid control test: position and tension"]]]
+  ],
+  photos:[["assets/cdpr/prototype.jpg","Assembled prototype"]],
+  video:"assets/cdpr/demo.mp4",
+  report:"assets/cdpr/report.pdf", reportTitle:"Graduation report (PFE)",
+  links:[], scope:true
+},
+{
+  id:"ethercat-ktix", kind:"exp", period:"Jun – Aug 2025 · Sousse, Tunisia", role:"Robotic motion control engineering intern",
+  title:"Real-time EtherCAT motion control",
+  domain:"Motion control · Ktix-Lab", tag:"Ktix-Lab",
+  summary:"Real-time control system for robot servo drives over EtherCAT: a deterministic control loop under Linux PREEMPT-RT, EtherCAT network and PDO mapping, and DS402 motion control in CSP and CSV modes.",
+  facts:[["Period","Jun – Aug 2025"],["Company","Ktix-Lab, Sousse"],["Role","Motion control engineering intern"],["Target","Raspberry Pi 4"]],
+  specs:[["Master","IgH EtherCAT"],["Profile","CiA DS402"],["Modes","CSP / CSV"],["OS","PREEMPT-RT"]],
+  stack:["C++","EtherCAT (IgH)","DS402","PREEMPT-RT Linux","Raspberry Pi 4","CMake","Python","MATLAB"],
+  sections:[
+    ["Real-time loop","Deterministic cyclic control loop written in C++ and run under Linux PREEMPT-RT, so the master exchanges process data with the drives on a fixed period."],
+    ["EtherCAT network","Configured the IgH EtherCAT master, the slave chain and the PDO mapping of each servo drive (target and actual position, velocity, control and status words)."],
+    ["DS402 drive control","Drove the CiA 402 state machine and ran the axes in Cyclic Synchronous Position (CSP) and Cyclic Synchronous Velocity (CSV) modes."],
+    ["Software structure","C++ classes for DS402 servo drives, with debugging and build tooling in CMake."],
+    ["Outcome","<ul><li>Sub-millisecond synchronization between controller and drives</li><li>Real-time fault detection and recovery</li><li>Improved stability and response time</li></ul>"]
+  ],
+  photos:[["assets/ethercat-ktix/bench.jpg","Test bench: servo motor and drive under control"],["assets/ethercat-ktix/architecture.jpg","System architecture: Raspberry Pi master, drives, EtherCAT"],["assets/ethercat-ktix/cabinet.jpg","Electrical cabinet with servo drives"],["assets/ethercat-ktix/code-structure.jpg","Software structure: DS402 servo drive classes"],["assets/ethercat-ktix/terminal.jpg","Live actual position and velocity from the drives"]],
+  video:"assets/ethercat-ktix/demo.mp4", report:"assets/ethercat-ktix/report.pdf", links:[]
+},
+{
+  id:"robot-design-ktix", kind:"exp", period:"Mar – May 2025 · Sousse, Tunisia", role:"Robotics designer, 5-axis robot",
+  title:"5-axis industrial robot design",
+  domain:"Mechanical design · Ktix-Lab", tag:"Ktix-Lab",
+  summary:"Design and optimization of a 5-axis industrial robot arm in SolidWorks: technical analysis, drive sizing, mass optimization through component selection, and cable routing simulation.",
+  facts:[["Period","Mar – May 2025"],["Company","Ktix-Lab, Sousse"],["Role","Robotics designer"],["Tool","SolidWorks"]],
+  specs:[["Axes","5"],["Focus","Mass & cost"],["CAD","SolidWorks"],["Routing","Simulated"]],
+  stack:["SolidWorks","Drive sizing","Kinematic analysis","Cable routing","Prototyping"],
+  sections:[
+    ["Architecture & sizing","Defined the mechanical architecture of the 5-axis arm and sized the drives for each joint from the technical analysis."],
+    ["Optimization","Reduced mass and production cost through component selection, while keeping structural stiffness."],
+    ["Cable routing","Simulated cable routing in SolidWorks to keep harnesses clear of moving parts in constrained spaces."],
+    ["Challenges","<ul><li>Structural integrity vs. weight</li><li>Cost vs. performance</li><li>Cable management in tight joints</li><li>Precise homing and reference positioning</li></ul>"]
+  ],
+  photos:[["assets/robot-design-ktix/cad-render.jpg","Final render of the 5-axis arm"],["assets/robot-design-ktix/solidworks.jpg","SolidWorks model next to the hardware"],["assets/robot-design-ktix/cable-routing.jpg","Cable routing simulation"],["assets/robot-design-ktix/prototype.jpg","Robot arm prototype at Ktix-Lab"]],
+  video:"assets/robot-design-ktix/demo.mp4", report:"assets/robot-design-ktix/report.pdf", links:[]
+},
+{
+  id:"xpertmeca", kind:"exp", period:"Jun – Jul 2024 · Sousse, Tunisia", role:"Robotic systems integration intern",
+  title:"Special machines & KUKA integration",
+  domain:"Integration · XPERT-MECA", tag:"XPERT-MECA",
+  summary:"Design, assembly and quality control of special machines, wiring of electrical control cabinets, and support on integrating KUKA robots with custom machinery.",
+  facts:[["Period","Jun – Jul 2024"],["Company","XPERT-MECA, Sousse"],["Role","Mechatronics intern"]],
+  stack:["KUKA robots","Electrical wiring","Assembly","Quality control","5S"],
+  sections:[
+    ["Machines","Assembly and quality control of special machines."],
+    ["Electrical","Wiring and installation of electrical control cabinets."],
+    ["Robotics","Assisted in integrating KUKA robots with custom machinery."],
+    ["Workshop","Component inventory management and 5S."]
+  ],
+  links:[]
+},
+{
+  id:"kuka", featured:true,
+  title:"KUKA machine-tending cell + mini-MES",
+  domain:"Robotics · MES", tag:"Open source",
+  summary:"A KUKA KR 10 R1100-2 tends a CNC lathe, measures each part and sorts it to an OK pallet or NOK bin. An ISA-95 mini-MES traces every part, logs each stop with its reason and computes OEE, MTBF and MTTR.",
+  facts:[["Type","Personal portfolio project"],["Simulation","RoboDK (free version)"],["Language","Python, RoboDK API"],["License","MIT"]],
+  specs:[["Path check","37 / 37 moves"],["Quality","100 %"],["Tolerance","Ø20 ±0.05 mm"],["Stations","5"]],
+  stack:["RoboDK API","KUKA PTP / LIN","Python","MQTT","Node-RED","InfluxDB","Grafana","Docker"],
+  sections:[
+    ["Robot cycle","<ul><li>Pick the raw shaft (Ø20 × 80 mm) from the infeed table</li><li>Load the CNC, machine, unload</li><li>Vision: measure the diameter</li><li>Sort: 20.00 ±0.05 mm → OK pallet, otherwise NOK bin</li><li>Log the part, go home</li></ul>"],
+    ["Path validation","All 37 moves checked for reach, collisions, LIN feasibility, wrist singularity and joint limits. Collision-free by design: via points and one solved arm configuration per station."],
+    ["MES functions","One log line per part (serial, diameter, OK/NOK, cycle time, downtime). Random faults with stop reason and duration. Live HMI in the RoboDK 3D view plus an HTML dashboard."],
+    ["KPIs","OEE = Availability × Performance × Quality, plus MTBF, MTTR and a downtime Pareto. Real-time stack (MQTT → Node-RED → InfluxDB → Grafana, in Docker) in progress."]
+  ],
+  table:{head:["ISA-95 level","Component","Role"],rows:[
+    ["0–1 Equipment","RoboDK station","Robot, gripper, CNC, tables, pallet, bin"],
+    ["2–3 Control + MES","main_cycle.py","Robot cycle, tracking, OK/NOK, faults, HMI, MQTT events"],
+    ["Data","kuka_cell_log.csv · kuka_cell_events.csv","One line per part, one line per stop"],
+    ["3 Analysis","kpi_report.py · dashboard.py","OEE, Pareto, cycle times"],
+    ["Validation","build_cell.py · check_paths.py","Build the cell, validate every move"]]},
+  photos:[["assets/kuka/robodk_cell.png","RoboDK cell: KR 10, CNC, vision, OK pallet, NOK bin"]],
+  video:"assets/kuka/demo.mp4", poster:"assets/kuka/demo-poster.jpg", cover:"assets/kuka/demo-poster.jpg",
+  data:"assets/kuka/kpi_report.txt", dataTitle:"KPI report from a real run",
+  report:"assets/kuka/report.pdf",
+  links:[["GitHub repository","https://github.com/salsabil-hachem/kuka-cell-mini-mes"]]
+},
+{
+  id:"twin", featured:true,
+  title:"Industrial digital twin of a conveyor drive",
+  domain:"IIoT · Digital twin", tag:"Open source",
+  summary:"Real-time digital twin of a conveyor drive on the standard Industry 4.0 stack. A physics simulator plays the machine; a nominal model computes residuals and diagnoses overload, cooling failure and bearing wear.",
+  facts:[["Type","Personal portfolio project"],["Hardware","None: physics simulator"],["Deploy","docker compose up"],["License","MIT"]],
+  specs:[["Telemetry","20 Hz"],["Faults diagnosed","3"],["Topics","ISA-95"],["Thermal trip","150 °C"]],
+  stack:["MQTT / Mosquitto","Node-RED","InfluxDB · Flux","Grafana","Docker Compose","Python"],
+  flow:[["simulator","Physics plant: DC motor + PI control + thermal + bearing wear. Publishes factory/line1/motor1/telemetry at 20 Hz."],
+        ["mosquitto","MQTT broker. Also carries fault-injection commands on …/cmd."],
+        ["twin","Nominal model → residuals → health index and diagnosis on …/twin."],
+        ["node-red","MQTT → InfluxDB line protocol, alarm manager (…/alarm), operator buttons."],
+        ["influxdb","Time-series storage, bucket \"motor\"."],
+        ["grafana","Live dashboard \"Motor 1 - Digital Twin\"."]],
+  table:{head:["Fault","Physical effect","Twin signature"],rows:[
+    ["Bearing wear","Friction ↑, vibration ↑","r_vib ↑ (+ r_current ↑) → thermal trip at 150 °C"],
+    ["Overload","Unexpected load torque","r_current ↑, vibration normal"],
+    ["Cooling failure","Thermal resistance ↑","r_temp ↑, current normal"]]},
+  sections:[
+    ["Next steps","<ul><li>Grafana alert rules on health index &lt; 40 %</li><li>Isolation Forest anomaly detection reading InfluxDB</li><li>OPC UA server for the simulator</li><li>Several machines + OEE dashboard</li></ul>"]
+  ],
+  photos:[["assets/twin/dashboard.png","Grafana: live digital twin of the motor"],["assets/twin/node-red.png","Node-RED flow: ingestion, alarms, fault injection"],["assets/twin/docker.png","Docker Compose services"]],
+  video:"assets/twin/demo.mp4",
+  report:"assets/twin/report.pdf",
+  links:[["GitHub repository","https://github.com/salsabil-hachem/industrial-digital-twin"]]
+},
+{id:"franka",title:"Franka Panda Q-learning",domain:"Reinforcement learning",summary:"Q-learning policy for a Franka Emika Panda arm in simulation.",stack:["Python","Q-learning","Simulation"]},
+{id:"nav2",title:"Autonomous mobile robot (ROS 2)",domain:"ROS 2 · Nav2",summary:"Complete ROS 2 stack: SLAM, localization and navigation with Nav2 and behavior trees, plus a real-time web interface for teleoperation and monitoring.",stack:["ROS 2 Humble","Nav2","SLAM","Behavior trees","OpenCV","Python","Web"],
+  sections:[["Autonomy","SLAM, localization and Nav2 navigation, with behavior trees for decision logic."],["Interface","Real-time web interface for teleoperation and monitoring."]]},
+{id:"llm-agent",title:"Conversational robotics agent",domain:"ROS 2 · LLM",summary:"ROS 2 agent with a local LLM (Ollama) that understands natural-language commands and turns them into robot actions.",stack:["ROS 2","Ollama","LLM","Python"]},
+{id:"chassis",title:"Mobile robot design & fabrication",domain:"Fabrication · Academic",summary:"Mobile robot chassis made from 1.5 mm sheet metal by cutting, 90° bending and welding, with damping, full wiring and motor control.",
+  facts:[["Type","Academic project"],["Material","1.5 mm sheet metal"],["Process","Cut · bend · weld"]],
+  stack:["SolidWorks","Sheet metal","Welding","Electrical wiring","Motor control"],
+  sections:[["Chassis","1.5 mm sheet metal, manual cutting and 90° bending; three main parts welded together for stiffness."],["Damping","Integrated vibration absorption for stability."],["Electrical","Complete wiring and motor control: motor drivers, microcontroller and ultrasonic sensor."],["Design for access","Removable cover for access to the internals; material and process chosen for cost."]],
+  photos:[["assets/chassis/chassis-cad.jpg","Chassis CAD model"],["assets/chassis/layout.jpg","Top view and drive layout"],["assets/chassis/wiring.jpg","Electrical integration: drivers, controller, sensor"]]},
+{id:"exo",title:"Lower-limb exoskeleton",domain:"Biomechanics · Academic",summary:"Active lower-limb orthosis to help people with reduced mobility walk: theoretical model of the leg and CAD design of the exoskeleton.",
+  facts:[["Type","Academic project"],["Goal","Mobility assistance"]],
+  stack:["Kinematic modeling","CAD","Actuation"],
+  sections:[["Concept","Active orthosis with robotic actuators, following human gait patterns."],["Design goals","Lightweight, ergonomic structure with real-time motion support and stabilization."]],
+  photos:[["assets/exo/model-cad.jpg","Theoretical leg model and CAD design"]]},
+{id:"jobshop",title:"Job-shop scheduler",domain:"Scheduling",live:true,summary:"Production scheduling tool with a Gantt chart view, open-source stack.",stack:["Scheduling","Gantt"]},
+{id:"ticket-agent",title:"Maintenance ticket agent",domain:"AI automation",live:true,summary:"AI maintenance ticket agent: n8n with a local LLM and RAG, FastAPI, Docker and GitHub Actions CI/CD.",stack:["n8n","Local LLM","RAG","FastAPI","Docker","GitHub Actions"]}
+];
+/* Small projects get media slots by convention: assets/<id>/photo-1.jpg … photo-4.jpg, demo.mp4, report.pdf */
+PROJECTS.forEach(function(p){
+  if(!p.photos){p.photos=[1,2,3,4].map(function(n){return["assets/"+p.id+"/photo-"+n+".jpg",""]})}
+  if(!p.video)p.video="assets/"+p.id+"/demo.mp4";
+  if(!p.report)p.report="assets/"+p.id+"/report.pdf";
+});
+
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function stack(a){return a&&a.length?'<ul class="stack">'+a.map(function(s){return"<li>"+esc(s)+"</li>"}).join("")+"</ul>":""}
+function specs(a){return a?'<dl class="specs">'+a.map(function(s){return"<div><dt>"+esc(s[0])+"</dt><dd>"+esc(s[1])+"</dd></div>"}).join("")+"</dl>":""}
+
+/* ---------- home ---------- */
+function row(p){
+  var isExp=p.kind==="exp";
+  return '<a class="proj" href="#'+p.id+'"><div><span class="label">'+esc(p.domain)+'</span> <span class="tag">'+esc(p.tag)+'</span><h3>'+esc(p.title)+'</h3>'+
+    (isExp?'<span class="period">'+esc(p.role)+' · '+esc(p.period)+'</span><p style="margin-top:10px">':'<p>')+esc(p.summary)+'</p>'+specs(p.specs)+'<span class="more">'+(isExp?'Open details →':'Open project →')+'</span></div></a>';
+}
+document.getElementById("exp").innerHTML=PROJECTS.filter(function(p){return p.kind==="exp"}).map(row).join("");
+document.getElementById("featured").innerHTML=PROJECTS.filter(function(p){return p.featured}).map(row).join("");
+document.getElementById("others").innerHTML=PROJECTS.filter(function(p){return!p.featured&&p.kind!=="exp"}).map(function(p){
+  return '<a class="card" href="#'+p.id+'"><span class="domain">'+esc(p.domain)+'</span><h3>'+esc(p.title)+'</h3><p>'+esc(p.summary)+'</p><div class="foot">'+(p.live?'<span class="tag live">In progress</span>':'<span></span>')+'<span class="more">Details →</span></div></a>';
+}).join("");
+
+/* ---------- project page ---------- */
+var home=document.getElementById("home"),detail=document.getElementById("detail");
+function exists(url){return fetch(url,{method:"HEAD",cache:"no-store"}).then(function(r){return r.ok}).catch(function(){return false})}
+
+function renderDetail(p){
+  var i=PROJECTS.indexOf(p),prev=PROJECTS[(i-1+PROJECTS.length)%PROJECTS.length],next=PROJECTS[(i+1)%PROJECTS.length];
+  var h='<div class="crumbs"><a href="'+(p.kind==="exp"?'#experience">← All experience':'#projects">← All projects')+'</a><span class="label">'+String(i+1).padStart(2,"0")+" / "+String(PROJECTS.length).padStart(2,"0")+'</span></div>';
+  h+='<header class="dhead"><div><span class="label">'+esc(p.domain)+'</span>'+(p.live?' <span class="tag live">In progress</span>':"")+'<h1>'+esc(p.title)+'</h1><p class="sum">'+esc(p.summary)+'</p></div>';
+  h+=p.facts?'<ul class="facts">'+p.facts.map(function(f){return"<li><span>"+esc(f[0])+"</span><span>"+esc(f[1])+"</span></li>"}).join("")+"</ul>":"<div>"+stack(p.stack)+"</div>";
+  h+="</header>";
+  if(p.specs)h+='<div class="block"><span class="label">Key figures</span>'+specs(p.specs)+stack(p.stack)+"</div>";
+  function figs(list){return list.map(function(ph,k){
+    return '<figure><button type="button" data-cap="'+esc(ph[1])+'"><img src="'+ph[0]+'" alt="'+esc(ph[1]||p.title+" photo "+(k+1))+'" loading="lazy"></button>'+(ph[1]?"<figcaption>"+esc(ph[1])+"</figcaption>":"")+"</figure>";
+  }).join("")}
+  if(p.galleries)h+=p.galleries.map(function(g){return '<div class="block"><span class="label">'+esc(g[0])+'</span><div class="gallery">'+figs(g[1])+'</div></div>'}).join("");
+  else h+='<div class="block" id="b-gallery"><span class="label">Photos</span><div class="gallery" id="gal">'+figs(p.photos)+"</div></div>";
+  h+='<div class="block video" id="b-video" hidden><span class="label">Video</span><video controls preload="metadata" playsinline'+(p.poster?' poster="'+p.poster+'"':"")+'><source src="'+p.video+'" type="video/mp4"></video></div>';
+  if(p.flow)h+='<div class="block"><span class="label">Architecture</span><div class="flow">'+p.flow.map(function(f){return"<div><b>"+esc(f[0])+"</b><span>"+esc(f[1])+"</span></div>"}).join("")+"</div></div>";
+  if(p.scope)h+='<div class="block"><span class="label">Tension control · step response (illustrative)</span><figure class="scope" aria-label="Cable tension tracking a stepped setpoint"><canvas id="scope" width="560" height="220"></canvas><figcaption class="legend"><span><i style="background:var(--trace2)"></i>setpoint</span><span><i style="background:var(--accent)"></i>cable tension</span><span>load cell → drive torque</span></figcaption></figure></div>';
+  if(p.sections)h+='<div class="block"><span class="label">How it works</span><div class="prose">'+p.sections.map(function(s){return"<div><h3>"+esc(s[0])+"</h3>"+(s[1].charAt(0)==="<"?s[1]:"<p>"+esc(s[1])+"</p>")+"</div>"}).join("")+"</div></div>";
+  if(p.table)h+='<div class="block"><span class="label">'+(p.flow?"Faults and signatures":"Architecture (ISA-95)")+'</span><div class="tbl"><table><thead><tr>'+p.table.head.map(function(c){return"<th>"+esc(c)+"</th>"}).join("")+"</tr></thead><tbody>"+p.table.rows.map(function(r){return"<tr>"+r.map(function(c){return"<td>"+esc(c)+"</td>"}).join("")+"</tr>"}).join("")+"</tbody></table></div></div>";
+  if(p.data)h+='<div class="block" id="b-data" hidden><span class="label">'+esc(p.dataTitle||"Results")+'</span><pre class="datapanel" id="datapanel"></pre></div>';
+  h+='<div class="block" id="b-report" hidden><span class="label">Report</span><div class="report"><div><h3>'+esc(p.reportTitle||"Technical report")+'</h3><p>PDF · opens in a new tab</p></div><a class="btn primary" href="'+p.report+'" target="_blank" rel="noopener">Open report ↗</a></div><iframe class="pdf" src="about:blank" data-src="'+p.report+'" title="'+esc(p.title)+' report"></iframe></div>';
+  if(p.links&&p.links.length)h+='<div class="block"><span class="label">Links</span><div class="cta">'+p.links.map(function(l){return'<a class="btn" href="'+l[1]+'" target="_blank" rel="noopener">'+esc(l[0])+" ↗</a>"}).join("")+"</div></div>";
+  h+='<div class="block" id="b-empty" hidden><div class="empty">Photos, video and report for this project are being added.</div></div>';
+  h+='<nav class="pager" aria-label="Project navigation"><a href="#'+prev.id+'"><span class="label">← Previous</span><span>'+esc(prev.title)+'</span></a><a class="next" href="#'+next.id+'"><span class="label">Next →</span><span>'+esc(next.title)+"</span></a></nav>";
+  detail.innerHTML=h;
+  if(p.scope)animate(document.getElementById("scope"),560,220,drawScope);
+
+  /* hide what isn't there yet */
+  var pending=3,found={g:false,v:false,r:false};
+  function done(){if(--pending===0&&!found.g&&!found.v&&!found.r&&!p.sections&&!p.flow)document.getElementById("b-empty").hidden=false}
+  var gfig=[].slice.call(document.querySelectorAll("#gal figure")),left=gfig.length;
+  if(p.galleries){found.g=true;pending--}
+  gfig.forEach(function(fg){var im=fg.querySelector("img");
+    function ok(){found.g=true;if(--left===0)fin()} function bad(){fg.remove();if(--left===0)fin()}
+    if(im.complete&&im.naturalWidth)ok();else if(im.complete)bad();else{im.addEventListener("load",ok);im.addEventListener("error",bad)}
+    im.loading="eager";
+  });
+  function fin(){if(!found.g)document.getElementById("b-gallery").hidden=true;done()}
+  exists(p.video).then(function(ok){if(ok){found.v=true;document.getElementById("b-video").hidden=false}done()});
+  exists(p.report).then(function(ok){if(ok){found.r=true;var b=document.getElementById("b-report");b.hidden=false;var f=b.querySelector("iframe");f.src=f.getAttribute("data-src")}done()});
+  if(p.data)fetch(p.data).then(function(r){return r.ok?r.text():null}).then(function(t){if(t){document.getElementById("datapanel").textContent=t.trim();document.getElementById("b-data").hidden=false}}).catch(function(){});
+}
+
+function route(){
+  var id=location.hash.slice(1),p=PROJECTS.filter(function(x){return x.id===id})[0];
+  if(p){home.hidden=true;detail.hidden=false;renderDetail(p);document.title=p.title+" · Salsabil Hachem";window.scrollTo(0,0)}
+  else{var was=!detail.hidden;detail.hidden=true;home.hidden=false;detail.innerHTML="";document.title="Salsabil Hachem";
+    if(was&&id){var t=document.getElementById(id);if(t)t.scrollIntoView()}}
+}
+
+/* lightbox */
+var lb=document.getElementById("lightbox");
+document.addEventListener("click",function(e){var b=e.target.closest(".gallery button,[data-zoom]");if(!b)return;
+  var im=b.querySelector("img"),src=b.getAttribute("data-zoom")||(im&&im.src);if(!src)return;
+  document.getElementById("lbImg").src=src;document.getElementById("lbImg").alt=b.getAttribute("data-cap")||(im?im.alt:"");
+  document.getElementById("lbCap").textContent=b.getAttribute("data-cap")||"";lb.hidden=false;document.getElementById("lbClose").focus()});
+function closeLb(){lb.hidden=true}
+document.getElementById("lbClose").addEventListener("click",closeLb);
+lb.addEventListener("click",function(e){if(e.target===lb)closeLb()});
+addEventListener("keydown",function(e){if(e.key==="Escape")closeLb()});
+
+/* copy email */
+var cb=document.getElementById("copy");
+cb.addEventListener("click",function(){var el=document.getElementById("email");
+  function sel(){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}
+  try{navigator.clipboard.writeText(el.textContent).then(function(){cb.textContent="Copied";setTimeout(function(){cb.textContent="Copy email"},1600)},sel)}catch(e){sel()}});
+
+/* ---------- canvas animations ---------- */
+var REDUCE=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()}
+/* draws in a fixed design space (dw × dh) scaled to the canvas width; stops when the canvas leaves the page */
+function animate(c,dw,dh,fn){
+  var x=c.getContext("2d"),t0=performance.now(),last=-1;
+  function frame(now){
+    if(!c.isConnected)return;
+    var r=c.getBoundingClientRect();
+    if(r.width){var d=devicePixelRatio||1,w=Math.round(r.width*d),h=Math.round(r.height*d);
+      if(c.width!==w||c.height!==h){c.width=w;c.height=h}
+      x.setTransform(w/dw,0,0,h/dh,0,0);x.clearRect(0,0,dw,dh);
+      fn(x,REDUCE?null:Math.max(0,now-t0)/1000,dw,dh)}
+    if(!REDUCE)requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  if(REDUCE)addEventListener("resize",function(){requestAnimationFrame(frame)});
+}
+function sstep(a){a=Math.max(0,Math.min(1,a));return a*a*(3-2*a)}
+
+/* tension step response (CDPR page) */
+var SC=(function(){var N=400,st=[0,1,1,.55,.55,1.4,1.4,.8],y=[],v=0,p=0,wn=.09,z=.28;
+  function sp(i){return st[Math.floor(i/N*st.length)]}
+  for(var i=0;i<N;i++){var e=sp(i)-p;v+=wn*wn*e-2*z*wn*v;p+=v;y.push(p+Math.sin(i*1.7)*.006)}
+  return{N:N,sp:sp,y:y}})();
+function drawScope(x,t,W,H){
+  var N=SC.N,pad=18,n=t===null?N:Math.min(Math.floor((t*130)%(N+80)),N);
+  x.strokeStyle=css("--rule");x.lineWidth=1;
+  for(var g=0;g<=4;g++){var gy=pad+(H-2*pad)*g/4;x.beginPath();x.moveTo(0,gy);x.lineTo(W,gy);x.stroke()}
+  for(g=0;g<=8;g++){var gx=W*g/8;x.beginPath();x.moveTo(gx,0);x.lineTo(gx,H);x.stroke()}
+  function Y(val){return H-pad-(val/1.6)*(H-2*pad)}
+  x.strokeStyle=css("--trace2");x.setLineDash([4,4]);x.lineWidth=1.5;x.beginPath();
+  for(var i=0;i<N;i++){var X=W*i/(N-1);i?x.lineTo(X,Y(SC.sp(i))):x.moveTo(X,Y(SC.sp(i)))}x.stroke();x.setLineDash([]);
+  x.strokeStyle=css("--accent");x.lineWidth=2;x.beginPath();
+  for(i=0;i<n;i++){X=W*i/(N-1);i?x.lineTo(X,Y(SC.y[i])):x.moveTo(X,Y(SC.y[i]))}x.stroke();
+  if(n>0){x.fillStyle=css("--accent");x.beginPath();x.arc(W*(n-1)/(N-1),Y(SC.y[n-1]),3.5,0,7);x.fill()}
+}
+
+/* robot cell: indexing conveyor → vision → 2-link arm palletizing → MQTT / OPC UA → MES panel */
+function drawCell(x,t){
+  var T=6,time=t===null?T*2.5:t,k=Math.floor(time/T),ph=(time/T)%1;
+  var ink=css("--ink"),mut=css("--muted"),rule=css("--rule"),acc=css("--accent"),sig=css("--signal"),pap=css("--paper"),pan=css("--panel");
+  var BOX=22,PITCH=60,PX=280,BELT=210,SH={x:360,y:226},L1=92,L2=88,HOME={x:360,y:118};
+  var SLOTS=[{x:438,y:230},{x:464,y:230},{x:438,y:208},{x:464,y:208}];
+  function mono(sz){x.font="500 "+sz+"px 'IBM Plex Mono',ui-monospace,monospace"}
+  function box(cx,bot,fill){x.fillStyle=fill||pap;x.strokeStyle=ink;x.lineWidth=1.5;x.fillRect(cx-BOX/2,bot-BOX,BOX,BOX);x.strokeRect(cx-BOX/2,bot-BOX,BOX,BOX);
+    x.beginPath();x.moveTo(cx-BOX/2,bot-BOX/2);x.lineTo(cx+BOX/2,bot-BOX/2);x.strokeStyle=rule;x.lineWidth=1;x.stroke()}
+
+  /* floor */
+  x.strokeStyle=rule;x.lineWidth=1;x.beginPath();x.moveTo(0,250.5);x.lineTo(560,250.5);x.stroke();
+
+  /* conveyor */
+  var shift=ph<.2?sstep(ph/.2)*PITCH:PITCH;
+  x.fillStyle=pan;x.strokeStyle=ink;x.lineWidth=1.5;x.fillRect(20,BELT,280,12);x.strokeRect(20,BELT,280,12);
+  x.save();x.beginPath();x.rect(20,BELT,280,12);x.clip();x.strokeStyle=rule;
+  for(var s=-1;s<12;s++){var sx=20+((s*26+shift*(26/PITCH)*2.3)%(26*12));x.beginPath();x.moveTo(sx,BELT+2);x.lineTo(sx+6,BELT+10);x.stroke()}x.restore();
+  [26,294].forEach(function(rx){x.beginPath();x.arc(rx,BELT+6,6,0,7);x.fillStyle=pap;x.fill();x.strokeStyle=ink;x.stroke()});
+  x.strokeStyle=ink;x.beginPath();x.moveTo(40,BELT+12);x.lineTo(40,250);x.moveTo(280,BELT+12);x.lineTo(280,250);x.stroke();
+
+  /* parts on belt */
+  x.save();x.beginPath();x.rect(20,0,290,BELT);x.clip();
+  for(var j=1;j<=5;j++){var bx=PX-PITCH*j+shift;if(j===1&&ph>=.40)continue;box(bx,BELT)}
+  x.restore();
+
+  /* vision station */
+  var CAMX=220;x.strokeStyle=ink;x.lineWidth=1.5;x.beginPath();x.moveTo(CAMX,112);x.lineTo(CAMX,124);x.stroke();
+  x.fillStyle=pap;x.fillRect(CAMX-12,124,24,14);x.strokeRect(CAMX-12,124,24,14);
+  var flash=ph>=.2&&ph<.3;
+  if(flash){x.fillStyle=sig;x.globalAlpha=.18*(1-(ph-.2)/.1);x.beginPath();x.moveTo(CAMX-4,138);x.lineTo(CAMX+4,138);x.lineTo(CAMX+16,BELT-2);x.lineTo(CAMX-16,BELT-2);x.closePath();x.fill();x.globalAlpha=1}
+  x.fillStyle=flash?sig:mut;x.beginPath();x.arc(CAMX,138,2.5,0,7);x.fill();
+  mono(9);x.fillStyle=mut;x.fillText("vision",CAMX+16,134);
+
+  /* pallet + placed parts */
+  x.fillStyle=pan;x.strokeStyle=ink;x.lineWidth=1.5;x.fillRect(418,230,66,8);x.strokeRect(418,230,66,8);
+  x.beginPath();x.moveTo(424,238);x.lineTo(424,250);x.moveTo(451,238);x.lineTo(451,250);x.moveTo(478,238);x.lineTo(478,250);x.stroke();
+  var slot=k%4;for(var q=0;q<slot;q++)box(SLOTS[q].x,SLOTS[q].y);
+  if(ph>=.69)box(SLOTS[slot].x,SLOTS[slot].y);
+
+  /* arm trajectory (gripper tip) */
+  var Sx=SLOTS[slot].x,Sy=SLOTS[slot].y-BOX,Py=BELT-BOX;
+  var W=[[0,HOME.x,HOME.y],[.2,HOME.x,HOME.y],[.28,PX,Py-50],[.34,PX,Py],[.40,PX,Py],[.46,PX,Py-50],[.58,Sx,Sy-50],[.64,Sx,Sy],[.69,Sx,Sy],[.76,Sx,Sy-50],[.88,HOME.x,HOME.y],[1,HOME.x,HOME.y]];
+  var tip={x:HOME.x,y:HOME.y};
+  for(var w=0;w<W.length-1;w++){if(ph>=W[w][0]&&ph<=W[w+1][0]){var a=sstep((ph-W[w][0])/(W[w+1][0]-W[w][0]));tip={x:W[w][1]+(W[w+1][1]-W[w][1])*a,y:W[w][2]+(W[w+1][2]-W[w][2])*a};break}}
+  var wr={x:tip.x,y:tip.y-14};
+  var dx=wr.x-SH.x,dy=wr.y-SH.y,d=Math.min(Math.hypot(dx,dy),L1+L2-.01);
+  var c2=(d*d-L1*L1-L2*L2)/(2*L1*L2),q2=Math.acos(Math.max(-1,Math.min(1,c2)));
+  var q1=Math.atan2(dy,dx)-Math.atan2(L2*Math.sin(q2),L1+L2*Math.cos(q2));
+  var el={x:SH.x+L1*Math.cos(q1),y:SH.y+L1*Math.sin(q1)};
+  /* base */
+  x.fillStyle=pan;x.strokeStyle=ink;x.lineWidth=1.5;x.fillRect(342,230,36,20);x.strokeRect(342,230,36,20);
+  /* links */
+  x.lineCap="round";x.strokeStyle=ink;x.lineWidth=9;x.beginPath();x.moveTo(SH.x,SH.y);x.lineTo(el.x,el.y);x.stroke();
+  x.lineWidth=7;x.beginPath();x.moveTo(el.x,el.y);x.lineTo(wr.x,wr.y);x.stroke();
+  x.lineWidth=3;x.beginPath();x.moveTo(wr.x,wr.y);x.lineTo(tip.x,tip.y-4);x.stroke();
+  var carry=ph>=.40&&ph<.69,open=carry?BOX/2+2:BOX/2+6;
+  x.lineWidth=2.5;x.beginPath();x.moveTo(tip.x-open,tip.y-4);x.lineTo(tip.x+open,tip.y-4);
+  x.moveTo(tip.x-open,tip.y-4);x.lineTo(tip.x-open,tip.y+6);x.moveTo(tip.x+open,tip.y-4);x.lineTo(tip.x+open,tip.y+6);x.stroke();x.lineCap="butt";
+  if(carry)box(tip.x,tip.y+BOX);
+  [SH,el,wr].forEach(function(p,i){x.beginPath();x.arc(p.x,p.y,i?4.5:6,0,7);x.fillStyle=acc;x.fill()});
+  mono(9);x.fillStyle=mut;x.fillText("robot",386,246);
+
+  /* MES panel */
+  var parts=1240+k+(ph>=.94?1:0);
+  x.fillStyle=pan;x.strokeStyle=rule;x.lineWidth=1;x.fillRect(300,10,250,82);x.strokeRect(300.5,10.5,250,82);
+  mono(9);x.fillStyle=mut;x.fillText("MES · LINE 1 · CELL 3",312,26);x.fillText("PARTS",312,48);x.fillText("OEE",392,48);x.fillText("CYCLE TIME",462,48);
+  mono(16);x.fillStyle=ink;x.fillText(String(parts),312,70);
+  var oee=(85.6+2.2*Math.sin(k*1.7)).toFixed(1);x.fillText(oee+"%",392,70);
+  x.strokeStyle=acc;x.lineWidth=1.5;x.beginPath();
+  for(var m=0;m<12;m++){var cy=74-6-4*Math.sin((k-11+m)*2.3)*Math.cos((k-11+m)*.9);var cx=462+m*7;m?x.lineTo(cx,cy):x.moveTo(cx,cy)}x.stroke();
+  /* live dot */
+  x.fillStyle=Math.floor(time*2)%2?acc:rule;x.beginPath();x.arc(538,22,3,0,7);x.fill();
+
+  /* data paths */
+  function path(pts,col,label,lx,ly,p){
+    x.strokeStyle=rule;x.setLineDash([3,4]);x.lineWidth=1;x.beginPath();pts.forEach(function(pt,i){i?x.lineTo(pt[0],pt[1]):x.moveTo(pt[0],pt[1])});x.stroke();x.setLineDash([]);
+    mono(9);x.fillStyle=col;x.fillText(label,lx,ly);
+    if(p===null)return;
+    var L=0,seg=[];for(var i=1;i<pts.length;i++){var l=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);seg.push(l);L+=l}
+    [0,.08,.16].forEach(function(o){var pp=p-o;if(pp<0||pp>1)return;var target=pp*L;
+      for(var i=0;i<seg.length;i++){if(target<=seg[i]){var f=target/seg[i];var X=pts[i][0]+(pts[i+1][0]-pts[i][0])*f,Y=pts[i][1]+(pts[i+1][1]-pts[i][1])*f;x.fillStyle=col;x.fillRect(X-3,Y-3,6,6);break}target-=seg[i]}});
+  }
+  var pv=ph>=.2&&ph<.5?(ph-.2)/.25:null;
+  path([[CAMX,112],[CAMX,52],[300,52]],sig,"MQTT",CAMX+6,74,pv);
+  var pr=ph>=.69&&ph<.98?(ph-.69)/.22:null;
+  path([[505,230],[505,92]],acc,"OPC UA",511,150,pr);
+}
+animate(document.getElementById("cell"),560,300,drawCell);
+if(REDUCE)[].forEach.call(document.querySelectorAll(".focus svg"),function(s){if(s.pauseAnimations)s.pauseAnimations()});
+
+addEventListener("hashchange",route);route();
+</script>
+</body>
+</html>
